@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>MarkSix Map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+        crossorigin="" />
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js" integrity="sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q=="
+        crossorigin=""></script>
+    <script src="src/stations.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="src/custom.css">
+</head>
+
+<body>
+    <div id='mapid'></div>
+    <div class="card card--custom card-hidden">
+        <div class="card-body">
+            <button type="button" class="close" id="close-card" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="containter">
+                <div class="row">
+                    <div class="col-7 col-sm-8">
+                        <span id="branchName">Card title</span>
+                    </div>
+                    <div class="col-5 col-sm-4">
+                        <span id="jackpotTitle">中頭獎次數</span>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-7 col-sm-8">
+                        <span id="addrName"></span>
+                    </div>
+                    <div class="col-5 col-sm-4">
+                        <span id="jackpotNo"></span>
+                    </div>
+                </div>
+            </div>
+            <span id="branchType"></span>
+        </div>
+    </div>
+
+    <script>
+        var m6map = L.map('mapid', {
+            // center: [22.379265, 114.145088],
+            center: [22.309763, 114.179704],
+            zoom: (screen.width >= 768)? 14 : 13,
+            // zoom: 11,
+            maxBounds: ([
+                [21.795661, 113.073929],
+                [23.113786, 115.230749]
+            ])
+        });
+        var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            minZoom: 10,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(m6map);
+
+        // Defind default marker style
+        var blue = L.icon({
+            iconUrl: 'images/icon/blue_ball.png',
+            iconSize: [24, 24]
+        });
+        var red = L.icon({
+            iconUrl: 'images/icon/red_ball.png',
+            iconSize: [36, 36]
+        });
+        var card = document.querySelector('.card');
+        // Sort stations jackpot_count in ascending order
+        const stations_ascend = stations.features.sort((a, b) => { return a.properties.jackpot_count - b.properties.jackpot_count })
+        // Get 10th values.
+        const top10 = stations_ascend[stations_ascend.length - 10].properties.jackpot_count;
+        // Define layers
+        var topBranches = L.geoJSON(stations, {
+            onEachFeature: foreachMarker,
+            pointToLayer: function (geoJsonPoint, latlng) {
+                return L.marker(latlng, {
+                    icon: red
+                });
+            },
+            filter: function (geoJsonFeature) {
+                return geoJsonFeature.properties.jackpot_count >= top10;
+            }
+        }).addTo(m6map);
+        var branches = L.geoJSON(stations, {
+            onEachFeature: foreachMarker,
+            pointToLayer: function (geoJsonPoint, latlng) {
+                return L.marker(latlng, {
+                    icon: blue
+                });
+            },
+            filter: function (geoJsonFeature) {
+                return geoJsonFeature.properties.jackpot_count < top10;
+            }
+        }).addTo(m6map);
+        // Change icon upon zooming
+        m6map.on('zoomend', function () {
+            var currentZoom = m6map.getZoom();
+            console.log(currentZoom);
+            if (currentZoom >= 12 && currentZoom < 14) {
+                blue = L.icon({
+                    iconUrl: 'images/icon/blue_ball.png',
+                    iconSize: [24, 24]
+                });
+                red = L.icon({
+                    iconUrl: 'images/icon/red_ball.png',
+                    iconSize: [36, 36]
+                });
+            } else if (currentZoom >= 14 && currentZoom < 15) {
+                blue = L.icon({
+                    iconUrl: 'images/icon/blue_ball.png',
+                    iconSize: [40, 40]
+                });
+                red = L.icon({
+                    iconUrl: 'images/icon/red_ball.png',
+                    iconSize: [60, 60]
+                });
+            } else if (currentZoom >= 15) {
+                blue = L.icon({
+                    iconUrl: 'images/icon/blue_ball.png',
+                    iconSize: [54, 54]
+                });
+                red = L.icon({
+                    iconUrl: 'images/icon/red_ball.png',
+                    iconSize: [81, 81]
+                });
+            } else {
+                blue = L.icon({
+                    iconUrl: 'images/icon/blue_dot.png',
+                    iconSize: [12, 12]
+                });
+                red = L.icon({
+                    iconUrl: 'images/icon/red_dot.png',
+                    iconSize: [18, 18]
+                });
+            }
+            topBranches.eachLayer(mkr => mkr.setIcon(red));
+            branches.eachLayer(mkr => mkr.setIcon(blue));
+        })
+        function foreachMarker(feature, layer) {
+            layer.on({
+                click: popInfocard
+            })
+        }
+        function popInfocard(e) {
+            m6map.panTo([e.target.feature.geometry.coordinates[1], e.target.feature.geometry.coordinates[0]], {
+                offset: [0, -45]
+            });
+            prop = e['target']["feature"]["properties"];
+            console.log(prop);
+            // Change Card Text
+            document.getElementById("branchName").textContent = prop["StationName"];
+            document.getElementById("addrName").textContent = prop["add"];
+            document.getElementById("jackpotNo").textContent = prop["jackpot_count"];
+            if (prop["jackpot_count"] >= top10) {
+                document.getElementById("branchType").textContent = "最幸運投注站之一";
+                document.getElementById("branchType").className = "top10text";
+            }
+            else {
+                document.getElementById("branchType").textContent = "投注站";
+                document.getElementById("branchType").className = "";
+            }
+
+            card.classList.remove("card-hidden");
+
+            let districtID = prop["DistrictId"];
+            let stationID = prop["StationId"];
+
+            // Change URL onClick
+            var stateObj = { districtID: districtID, stationID: stationID };
+            window.history.pushState(stateObj, "", `#${districtID}-${stationID}`);
+            // Fire event
+
+        }
+        var closeCard = document.querySelector('#close-card');
+        closeCard.addEventListener('click', () => {
+            card.classList.add("card-hidden");
+        });
+    </script>
+</body>
+
+</html>
