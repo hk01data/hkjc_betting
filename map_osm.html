@@ -48,7 +48,7 @@
     <script>
         var m6map = L.map('mapid', {
             // center: [22.379265, 114.145088],
-            center: [22.309763, 114.179704],
+            center: (screen.width >= 768)? 22.295341, 114.171862] : [22.309763, 114.179704],
             zoom: (screen.width >= 768)? 14 : 13,
             // zoom: 11,
             maxBounds: ([
