@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Arc</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="holygrail.css">
+    <style>
+        .hg {
+            display: grid;
+            grid-template-areas: "main ads";
+            grid-template-columns: 1fr 150px;
+
+            /* grid-template-rows: 1fr; */
+            min-height: 100vh;
+        }
+        @media screen and (max-width: 720px) {
+            .hamburger {
+                grid-template-columns: 1fr 80px;
+            } 
+        }
+
+        .hg-left,
+        .hg-right {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body class="hg">
+    <!-- <header class="hg-header">
+        <a target="_blank" href="#">
+            <img src="banner.gif" class="banner">
+        </a>
+    </header> -->
+    <main class="hg-main">
+        <iframe src="../map.html" width="100%" height="100%"></iframe>
+    </main>
+    <!-- <aside class="hg-left"><img src="banner_vert.gif" class="banner_vert"></aside> -->
+    <aside class="hg-right"><img src="banner_vert.gif" class="banner_vert"></aside>
+    <!-- <footer class="hg-footer">
+        <a target="_blank" href="#">
+            <img src="banner.gif" class="banner">
+        </a>
+    </footer> -->
+
+</body>
+
+</html>

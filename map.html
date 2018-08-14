@@ -49,6 +49,7 @@
         var m6map = L.map('mapid', {
             center: (screen.width >= 768)? [22.300522, 114.172841] : [22.309763, 114.179704],
             zoom: (screen.width >= 768)? 14 : 13,
+            zoomSnap: 0.25,
             maxBounds: ([
                 [21.795661, 113.073929],
                 [23.113786, 115.230749]
@@ -100,7 +101,6 @@
         // Change icon upon zooming
         m6map.on('zoomend', function () {
             var currentZoom = m6map.getZoom();
-            console.log(currentZoom);
             if (currentZoom >= 12 && currentZoom < 14) {
                 blue = L.icon({
                     iconUrl: 'images/icon/blue_ball.png',
