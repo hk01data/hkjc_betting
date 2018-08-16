@@ -101,32 +101,39 @@
         // Change icon upon zooming
         m6map.on('zoomend', function () {
             var currentZoom = m6map.getZoom();
+            console.log(m6map.getZoom());
             if (currentZoom >= 12 && currentZoom < 14) {
                 blue = L.icon({
                     iconUrl: 'images/icon/blue_ball.png',
-                    iconSize: [24, 24]
+                    iconSize: [24, 24],
+                    iconAnchor: [0, 24]
                 });
                 red = L.icon({
                     iconUrl: 'images/icon/red_ball.png',
-                    iconSize: [36, 36]
+                    iconSize: [36, 36],
+                    iconAnchor: [0, 36]
                 });
             } else if (currentZoom >= 14 && currentZoom < 15) {
                 blue = L.icon({
                     iconUrl: 'images/icon/blue_ball.png',
-                    iconSize: [40, 40]
+                    iconSize: [40, 40],
+                    iconAnchor: [0, 40]
                 });
                 red = L.icon({
                     iconUrl: 'images/icon/red_ball.png',
-                    iconSize: [60, 60]
+                    iconSize: [60, 60],
+                    iconAnchor: [0, 60]
                 });
             } else if (currentZoom >= 15) {
                 blue = L.icon({
                     iconUrl: 'images/icon/blue_ball.png',
-                    iconSize: [54, 54]
+                    iconSize: [54, 54],
+                    iconAnchor: [0, 54]
                 });
                 red = L.icon({
                     iconUrl: 'images/icon/red_ball.png',
-                    iconSize: [81, 81]
+                    iconSize: [81, 81],
+                    iconAnchor: [0, 81]
                 });
             } else {
                 blue = L.icon({
