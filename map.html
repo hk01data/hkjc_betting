@@ -148,17 +148,19 @@
             topBranches.eachLayer(mkr => mkr.setIcon(red));
             branches.eachLayer(mkr => mkr.setIcon(blue));
         })
+
         function foreachMarker(feature, layer) {
             layer.on({
                 click: popInfocard
             })
         }
+
         function popInfocard(e) {
             m6map.panTo([e.target.feature.geometry.coordinates[1], e.target.feature.geometry.coordinates[0]], {
                 offset: [0, -45]
             });
             prop = e['target']["feature"]["properties"];
-            console.log(prop);
+            // console.log(prop);
             // Change Card Text
             document.getElementById("branchName").textContent = prop["StationName"];
             document.getElementById("addrName").textContent = prop["add"];
@@ -180,13 +182,32 @@
             // Change URL onClick
             var stateObj = { districtID: districtID, stationID: stationID };
             window.history.pushState(stateObj, "", `#${districtID}-${stationID}`);
+            
             // Fire event
+            console.log(`FIRE marker click ${districtID}-${stationID}`);
 
         }
         var closeCard = document.querySelector('#close-card');
         closeCard.addEventListener('click', () => {
             card.classList.add("card-hidden");
         });
+
+        entryPoint = "otherArticles";
+        switch (entryPoint) {
+            case "otherArticles":
+                m6map.once('movestart', function (){
+                    console.log('FIRE first interaction');
+                })
+                break;
+            case "issuePage":
+            case "direct":
+                console.log('FIRE first load');
+                break;
+            case "flagshipArticle":
+                console.log('FIRE nothing');
+                break;
+        }
+
     </script>
 </body>
 
