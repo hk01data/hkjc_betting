@@ -187,14 +187,14 @@
             var stateObj = { districtID: districtID, stationID: stationID };
             window.history.pushState(stateObj, "", `#${districtID}-${stationID}`);
 
-            console.log(prevent_double_count);
+
             if (START_MODE == "article" && prevent_double_count == 1) {
                 prevent_double_count--;
             } else {
                 console.log("Send article PV");
                 firePV(removehash(window.location.href), false, true);
             }
-            console.log(prevent_double_count);
+
 
             console.log("Send map PV");
             firePV(removehash(window.location.href), true, true);
