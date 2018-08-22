@@ -188,9 +188,9 @@
             
             // Fire event
             
-            console.log('send article PV');
-            console.log('send map PV');
-            console.log(`FIRE marker click ${districtID}-${stationID}`);
+            console.log('Send article PV');
+            console.log('Send map PV');
+            console.log(`Send pin click event to both piwik and GA - ${districtID}-${stationID}`);
 
         }
         var closeCard = document.querySelector('#close-card');
@@ -207,17 +207,17 @@
         switch (entrySource) {
             case "article":
                 m6map.once('movestart', function (){
-                    console.log('FIRE first action');
-                    console.log('send a map PV');
+                    console.log('Send a PV with Article information to GA only');
+                    console.log('Send a map PV (without article information to selected GA profile and piwik)');
                     console.log('Send the landing event to both piwik and GA');
                 })
                 break;
             case "self":
-                console.log('FIRE nothing');
+                console.log('send a map PV');
                 break;
             default: // issue page or organic access
-                console.log('FIRE Initial PV - send a PV with Article information to GA only');
-                console.log('send a map PV');
+                console.log('Send a PV with Article information to GA only');
+                console.log('Send a map PV (without article information to selected GA profile and piwik)');
                 console.log('Send the landing event to both piwik and GA');
                 break;
         }
