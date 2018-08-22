@@ -1,51 +1,50 @@
 // Function to get anonymous_id from cookie
-function getAnonymousId(){
+function getAnonymousId() {
     function s4() {
-      return Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1);
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
     }
-    
-    if(document.cookie.match(/hk01_annonymous_id/)){
-      return(document.cookie.match(/hk01_annonymous_id=([\w\-]+)/)[1]);
-    }else{
-      var temp_uid = s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
-      var d = new Date();
-      d.setTime(d.getTime() + (3650*24*60*60*1000));
-      var expires = "expires="+ d.toUTCString();
-      document.cookie = "hk01_annonymous_id=" + temp_uid + ";" + expires + 
-        ";path=/;domain=." + window.location.host.match(/([^\.]+(\.[^\.]+)?)$/)[1];
-      return(temp_uid);
+
+    if (document.cookie.match(/hk01_annonymous_id/)) {
+        return (document.cookie.match(/hk01_annonymous_id=([\w\-]+)/)[1]);
+    } else {
+        var temp_uid = s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
+        var d = new Date();
+        d.setTime(d.getTime() + (3650 * 24 * 60 * 60 * 1000));
+        var expires = "expires=" + d.toUTCString();
+        document.cookie = "hk01_annonymous_id=" + temp_uid + ";" + expires +
+            ";path=/;domain=." + window.location.host.match(/([^\.]+(\.[^\.]+)?)$/)[1];
+        return (temp_uid);
     }
-  }
-  
-  // Initialize the tracker client
-  var myTracker = new trackerClient({
+}
+
+// Initialize the tracker client
+var myTracker = new trackerClient({
     GA: {
         trackingId: ["UA-70981149-9"] // replace with your tracking ID //datateam, bigdata
-      },
-      Piwik: {
+    },
+    Piwik: {
         trackingUrl: "https://track.hktester.com/v1web/piwik.php",  // replace with your piwik tracking url
         siteId: 5,  // replace with your piwik site ID
         userId: getAnonymousId(), // replace with user ID, should be same as MEMBER_ID/ANONYMOUS_ID
         isSPA: true // if the page is single page application
-      }
-  }, false);
-  
-  /* Config the selected article detail */
-  const page_path = "";
-  const author = "\u7c21\u6d69\u5fb7, \u6797\u70b3\u5764, \u6881\u9038\u98a8, \u856d\u8f1d\u6d69, \u5340\u79ae\u57ce";  // 簡浩德 林炳坤 梁逸風 蕭輝浩 區禮城
-  const channel = "\u793e\u6703\u65b0\u805e"; // 社會新聞
-  const section = "\u793e\u6703\u65b0\u805e"; // 社會新聞
-  const article_id = "221086";
-  
-  function firePV(url, piwik, ga) {
+    }
+}, false);
+
+/* Config the selected article detail */
+const page_path = "";
+const author = "\u7c21\u6d69\u5fb7, \u6797\u70b3\u5764, \u6881\u9038\u98a8, \u856d\u8f1d\u6d69, \u5340\u79ae\u57ce";  // 簡浩德 林炳坤 梁逸風 蕭輝浩 區禮城
+const channel = "\u793e\u6703\u65b0\u805e"; // 社會新聞
+const section = "\u793e\u6703\u65b0\u805e"; // 社會新聞
+const article_id = "221086";
+
+function fireArticlePV(url) {
     try {
-        // Send Pageview for Map
         // Send Pageview for article
         myTracker.pageView({
-            GA: ga,
-            Piwik: piwik
+            GA: true,
+            Piwik: false
         }, {
                 1: author,
                 2: section,
@@ -53,6 +52,16 @@ function getAnonymousId(){
                 5: article_id
             }, "https://hk01.com/" + page_path, page_path);
 
+        console.log("fire Article PV");
+    }
+    catch (err) {
+        console.log(err.message);
+    }
+
+}
+
+function fireMapPV(url) {
+    try {
         myTracker.disableGA({
             'UA-70981149-9': true, // staging
             // 'UA-112679299-5': true, // hk01 data
@@ -66,8 +75,7 @@ function getAnonymousId(){
         }, {}, url, removehash(window.location.href).replace(window.location.origin, ''));
 
         myTracker.resetGAFlags();
-
-        console.log("Article PV - custom url fired: " + url);
+        console.log("fire Map PV");
     }
     catch (err) {
         console.log(err.message);
@@ -101,4 +109,4 @@ function fireEvent(cat, act, lab) {
 
 function removehash(string) {
     return string.replace("#", "/");
-  }
+}
