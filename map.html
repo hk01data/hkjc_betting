@@ -192,12 +192,12 @@
                 prevent_double_count--;
             } else {
                 console.log("Send article PV");
-                firePV(removehash(window.location.href), false, true);
+                fireArticlePV(removehash(window.location.href));
             }
 
 
             console.log("Send map PV");
-            firePV(removehash(window.location.href), true, true);
+            fireMapPV(removehash(window.location.href));
 
             event_msg_label = {
                 'branch_name': prop["StationName"],
@@ -224,7 +224,7 @@
         // Handle Tracking
 
         let linkText = window.location.href;
-        if (linkText.match(/#/)) entrySource = linkText.match(/#(.*)/)[1];
+        var entrySource = (linkText.match(/#/))? linkText.match(/#(.*)/)[1]: "";
         var entryPoint = "";
 
 
@@ -233,33 +233,27 @@
                 entryPoint = "other_article";
                 var prevent_double_count = 1;
                 m6map.once('movestart', function () {
-                    console.log("Send article PV");
-                    firePV(removehash(window.location.href), false, true);
+                    fireArticlePV(removehash(window.location.href));
                 })
                 break;
             case "self":
                 entryPoint = "base_article";
-                console.log("Send article PV");
-                firePV(removehash(window.location.href), false, true);
+                fireArticlePV(removehash(window.location.href));
                 break;
             case "issue":
                 entryPoint = "issue";
-                console.log("Send article PV");
-                firePV(removehash(window.location.href), false, true);
+                fireArticlePV(removehash(window.location.href));
                 break;
             default:
                 entryPoint = "organic";
-                console.log("Send article PV");
-                firePV(removehash(window.location.href), false, true);
+                fireArticlePV(removehash(window.location.href));
         }
 
         const START_MODE = entryPoint;
         console.log(START_MODE);
 
-        console.log("Landing - Send map PV");
-        firePV(removehash(window.location.href), true, true);
+        fireMapPV(removehash(window.location.href));
 
-        console.log('Landing - Send View Event');
         fireEvent("marksixmap_landing", "view", {
             'start_mode': START_MODE,
             'anonymous_id': getAnonymousId(),
