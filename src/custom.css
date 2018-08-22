@@ -19,7 +19,6 @@ body {
     background-color: #f6f6f6;
     z-index: 5010;
     visibility: visible;
-    visibility: visible;
     opacity: 1;
     transition: opacity 0.33s linear;
     border-top-left-radius: 8px !important;
@@ -95,12 +94,13 @@ body {
     border-radius: 0.8rem;
     font-weight: 300;
     display: inline-block;
-    color: white;
-    background-color: #009ee2;
+    color: #009ee2;
+    border: #009ee2 1px solid;
 }
 
 .card .top10text {
-    background-color: red !important;
+    border-color: red !important;
+    color: red !important;
 }
 
 .card #addrName {
