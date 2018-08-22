@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="src/custom.css">
     <!-- Tracking libary -->
     <script src="https://tracking-lib.hk01.com/classic-piwik/trackerClient.lastest.js"></script>
+    <script src="src/trackEvent.js"></script>
 </head>
 
 <body>
@@ -50,8 +51,8 @@
     <script>
         // Create Map
         var m6map = L.map('mapid', {
-            center: (screen.width >= 768)? [22.300522, 114.172841] : [22.309763, 114.179704],
-            zoom: (screen.width >= 768)? 14 : 13,
+            center: (screen.width >= 768) ? [22.300522, 114.172841] : [22.309763, 114.179704],
+            zoom: (screen.width >= 768) ? 14 : 13,
             zoomSnap: 0.25,
             maxBounds: ([
                 [21.795661, 113.073929],
@@ -185,42 +186,89 @@
             // Change URL onClick
             var stateObj = { districtID: districtID, stationID: stationID };
             window.history.pushState(stateObj, "", `#${districtID}-${stationID}`);
-            
-            // Fire event
-            
-            console.log('Send article PV');
-            console.log('Send map PV');
-            console.log(`Send pin click event to both piwik and GA - ${districtID}-${stationID}`);
+
+            console.log(prevent_double_count);
+            if (START_MODE == "article" && prevent_double_count == 1) {
+                prevent_double_count--;
+            } else {
+                console.log("Send article PV");
+                firePV(removehash(window.location.href), false, true);
+            }
+            console.log(prevent_double_count);
+
+            console.log("Send map PV");
+            firePV(removehash(window.location.href), true, true);
+
+            event_msg_label = {
+                'branch_name': prop["StationName"],
+                'branch_type': (prop["jackpot_count"] >= top10) ? "popular" : "normal",
+                'branch_lat': e.target.feature.geometry.coordinates[1],
+                'branch_lon': e.target.feature.geometry.coordinates[0],
+                'anonymous_id': getAnonymousId(),
+                'ts': Date.now()
+            }
+
+            console.log('Send Click event');
+            fireEvent("marksixmap_branch", "click", event_msg_label);
 
         }
+
         var closeCard = document.querySelector('#close-card');
         closeCard.addEventListener('click', () => {
             card.classList.add("card-hidden");
+
+            console.log('Send Click event');
+            fireEvent("marksixmap_branch", "close", event_msg_label);
         });
 
         // Handle Tracking
-        var entrySource = "";
+
         let linkText = window.location.href;
         if (linkText.match(/#/)) entrySource = linkText.match(/#(.*)/)[1];
-        console.log("source: " + entrySource);
-        
+        var entryPoint = "";
+
+
         switch (entrySource) {
             case "article":
-                m6map.once('movestart', function (){
-                    console.log('Send a PV with Article information to GA only');
-                    console.log('Send a map PV (without article information to selected GA profile and piwik)');
-                    console.log('Send the landing event to both piwik and GA');
+                entryPoint = "other_article";
+                var prevent_double_count = 1;
+                m6map.once('movestart', function () {
+                    console.log("Send article PV");
+                    firePV(removehash(window.location.href), false, true);
                 })
                 break;
             case "self":
-                console.log('send a map PV');
+                entryPoint = "base_article";
+                console.log("Send article PV");
+                firePV(removehash(window.location.href), false, true);
                 break;
-            default: // issue page or organic access
-                console.log('Send a PV with Article information to GA only');
-                console.log('Send a map PV (without article information to selected GA profile and piwik)');
-                console.log('Send the landing event to both piwik and GA');
+            case "issue":
+                entryPoint = "issue";
+                console.log("Send article PV");
+                firePV(removehash(window.location.href), false, true);
                 break;
+            default:
+                entryPoint = "organic";
+                console.log("Send article PV");
+                firePV(removehash(window.location.href), false, true);
         }
+
+        const START_MODE = entryPoint;
+        console.log(START_MODE);
+
+        console.log("Landing - Send map PV");
+        firePV(removehash(window.location.href), true, true);
+
+        console.log('Landing - Send View Event');
+        fireEvent("marksixmap_landing", "view", {
+            'start_mode': START_MODE,
+            'anonymous_id': getAnonymousId(),
+            'ts': Date.now()
+        });
+
+        // Global
+        var event_msg_label = "";
+
 
     </script>
 </body>
