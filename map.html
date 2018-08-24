@@ -189,16 +189,12 @@
             var stateObj = { districtID: districtID, stationID: stationID };
             window.history.pushState(stateObj, "", `#${districtID}-${stationID}`);
 
-
-            if (START_MODE == "article" && prevent_double_count == 1) {
+            if (START_MODE == "other_article" && prevent_double_count == 1) {
                 prevent_double_count--;
             } else {
-                console.log("Send article PV");
                 fireArticlePV(removehash(window.location.href));
             }
 
-
-            console.log("Send map PV");
             fireMapPV(removehash(window.location.href));
 
             event_msg_label = {
@@ -229,11 +225,11 @@
         var entrySource = (linkText.match(/#/))? linkText.match(/#(.*)/)[1]: "";
         var entryPoint = "";
 
-
+        
         switch (entrySource) {
             case "article":
-                entryPoint = "other_article";
                 var prevent_double_count = 1;
+                entryPoint = "other_article";
                 m6map.once('movestart', function () {
                     fireArticlePV(removehash(window.location.href));
                 })
